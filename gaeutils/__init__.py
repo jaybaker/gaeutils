@@ -5,7 +5,8 @@ from google.appengine.api import taskqueue, app_identity
 __all__ = ['App', 
     'safe_enqueue', 
     'QueryExec', 
-    'urlsafe']
+    'urlsafe',
+    'fanout']
 
 class _App(object):
     """

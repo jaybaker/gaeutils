@@ -18,6 +18,8 @@ class TestBase(unittest.TestCase):
         self.testbed.init_datastore_v3_stub()
         self.testbed.init_memcache_stub()
         self.testbed.init_app_identity_stub()
+        #self.testbed.init_taskqueue_stub(root_path=os.path.join('.'))
+        self.testbed.init_taskqueue_stub()
 
         gaeutils.App.setup() # needed in test env
 
