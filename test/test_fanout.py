@@ -35,7 +35,16 @@ class TestFanout(tests.TestBase):
         self.assertTrue(self.subscriber1.key in shards[0].subscribers)
 
     def testUnsubscribe(self):
-        self.fail()
+        # unsubscribe w/ no subscription
+        self.subscriber3 = Subscriber(name='alice')
+        self.subscriber3.put()
+        self.sub.unsubscribe(self.subscriber3) # no error
+
+        # regular unsubscribe
+        self.sub.subscribe(self.subscriber1)
+        self.assertEqual(1, len(self.sub.shards(ref=self.subscriber1.key)))
+        self.sub.unsubscribe(self.subscriber1)
+        self.assertEqual(0, len(self.sub.shards(ref=self.subscriber1.key)))
 
     def testSubscribeIdempotent(self):
         self.sub.subscribe(self.subscriber1)
@@ -50,7 +59,6 @@ class TestFanout(tests.TestBase):
         for subscriber in self.subscribers:
             self.sub.subscribe(subscriber, shard_size=_subscriber_size, shard_child_limit=_shard_num)
         shards = self.sub.shards()
-        #for shard in shards: print shard.key, shard.subscriber_count, shard.shard_child_count
         self.assertTrue(len(shards) > 1)
         for shard in shards:
             self.assertTrue(shard.subscriber_count <= _subscriber_size)
