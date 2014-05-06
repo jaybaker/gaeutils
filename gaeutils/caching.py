@@ -26,7 +26,6 @@ def memcache_hook(use_cache=True):
         # looks for a Set operation
         # checks config and also safety checks not in prod
         if call in ('Set',) and not use_cache and gaeutils.App.dev:
-            logging.debug('circumventing cache')
             # get around cache by prepending to namespace on Set
             ns = 'zz' + ns
         # augment namespace
