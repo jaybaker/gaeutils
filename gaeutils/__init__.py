@@ -27,7 +27,7 @@ class _App(object):
             self.id = os.getenv('APPLICATION_ID')
         version_info     = os.getenv('CURRENT_VERSION_ID', '').split('.')
         self.version     = version_info[0] if len(version_info) > 0 else ''
-        self.deploy_time = version_info[1] if len(version_info) > 1 else ''
+        self.deploy_time = int(version_info[1]) if len(version_info) > 1 else 0
         self.dev         = os.getenv('SERVER_SOFTWARE', '').startswith('Dev')
 
     def __str__(self):
