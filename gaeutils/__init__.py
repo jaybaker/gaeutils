@@ -1,6 +1,7 @@
 import os
 import time
 from google.appengine.api import taskqueue, app_identity
+from google.appengine.ext import ndb
 
 __all__ = ['App', 
     'safe_enqueue', 
@@ -99,6 +100,15 @@ class QueryExec(object):
         for page_fut in self.get_by_page_async(**kwargs):
             items = page_fut.get_result()
             yield items
+
+    @ndb.tasklet
+    def get_all_async(self, **kwargs):
+        items = []
+        more, next_curs = True, None
+        while more:
+            page, next_curs, more = yield self.query.fetch_page_async(self.batch_size, start_cursor=next_curs, **kwargs)
+            items.extend(page)
+        raise ndb.Return(items)
 
     def get_all(self, **kwargs):
         """
