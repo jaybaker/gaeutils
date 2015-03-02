@@ -1,7 +1,5 @@
 import tests
 
-from gaeutils import caching
-
 from google.appengine.api import memcache
 
 class TestMemcacheNoHook(tests.TestBase):
@@ -22,6 +20,7 @@ class TestMemcacheNoHook(tests.TestBase):
 class TestMemcacheHook(tests.TestBase):
     def setUp(self):
         super(TestMemcacheHook, self).setUp()
+        from gaeutils import caching
 
         caching.memcache_hook(use_cache=False)
         memcache.set('foo', 'bar')
@@ -40,10 +39,3 @@ class TestMemcacheHook(tests.TestBase):
     def testNamespace(self):
         memcache.set('foobar', 'bar', namespace='xyz')
         self.assertTrue(memcache.get('foobar', namespace='xyz') is None)
-
-
-
-
-
-
-
