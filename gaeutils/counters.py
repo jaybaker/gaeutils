@@ -1,3 +1,4 @@
+import hashlib
 import random
 
 from google.appengine.api import memcache
@@ -80,3 +81,48 @@ def increase_shards(name, num_shards):
     if config.num_shards < num_shards and num_shards <= MAX_NUM_SHARDS:
         config.num_shards = num_shards
         config.put()
+
+class Counter(ndb.Model):
+    """
+    A simple counter.
+
+    A specific counter may have a name, 
+    which you bake into the key.
+
+    Counters may also be grouped by domain 
+    which allows for a query to get them 
+    as a group.
+    """
+    count  = ndb.IntegerProperty(default=0)
+    domain = ndb.StringProperty()
+
+    @classmethod
+    def gen_key(cls, name, domain=None):
+        _key = hashlib.sha224(name.lower() + (domain or '').lower())
+        return ndb.Key(cls, _key.hexdigest())
+
+    @classmethod
+    @ndb.transactional
+    def get_or_create(cls, name, domain=None):
+        key = cls.gen_key(name, domain=domain)
+        counter = key.get()
+        if counter is None:
+            counter = cls(key=key)
+            if domain is not None:
+                counter.domain = domain
+            counter.put()
+        return counter
+
+    @classmethod
+    @ndb.transactional
+    def increment(cls, name, domain=None, delta=1):
+        counter = cls.get_or_create(name, domain=domain)
+        counter.count += delta
+        counter.put()
+
+    @classmethod
+    @ndb.transactional
+    def set(cls, name, domain=None, value=0):
+        counter = cls.get_or_create(name, domain=domain)
+        counter.count = value
+        counter.put()
