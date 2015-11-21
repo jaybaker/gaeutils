@@ -94,6 +94,7 @@ class Counter(ndb.Model):
     as a group.
     """
     count  = ndb.IntegerProperty(default=0)
+    name   = ndb.StringProperty()
     domain = ndb.StringProperty()
 
     @classmethod
@@ -112,7 +113,8 @@ class Counter(ndb.Model):
     def get_or_create(cls, name, domain=None):
         counter = cls.get(name=name, domain=domain)
         if counter is None:
-            counter = cls(key=cls.gen_key(name=name, domain=domain))
+            counter = cls(key=cls.gen_key(name=name, domain=domain), 
+                    name=name)
             if domain is not None:
                 counter.domain = domain
             counter.put()
