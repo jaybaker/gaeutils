@@ -103,11 +103,16 @@ class Counter(ndb.Model):
 
     @classmethod
     @ndb.transactional
-    def get_or_create(cls, name, domain=None):
+    def get(cls, name, domain=None):
         key = cls.gen_key(name, domain=domain)
-        counter = key.get()
+        return key.get()
+
+    @classmethod
+    @ndb.transactional
+    def get_or_create(cls, name, domain=None):
+        counter = cls.get(name=name, domain=domain)
         if counter is None:
-            counter = cls(key=key)
+            counter = cls(key=cls.gen_key(name=name, domain=domain))
             if domain is not None:
                 counter.domain = domain
             counter.put()
