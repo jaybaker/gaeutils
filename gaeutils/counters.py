@@ -97,6 +97,11 @@ class Counter(ndb.Model):
     name   = ndb.StringProperty()
     domain = ndb.StringProperty()
 
+    @ndb.transactional
+    def _increment(self, delta=1):
+        self.count += delta
+        self.put()
+
     @classmethod
     def gen_key(cls, name, domain=None):
         _key = hashlib.sha224(name.lower() + (domain or '').lower())
