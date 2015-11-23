@@ -7,7 +7,9 @@ __all__ = ['App',
     'safe_enqueue', 
     'QueryExec', 
     'urlsafe',
-    'fanout']
+    'fanout',
+    'Stack',
+    'FutStack']
 
 class _App(object):
     """
@@ -68,6 +70,37 @@ def urlsafe(key_repr):
         return key_repr
     else:
         return key_repr.urlsafe()
+
+class Stack(object):
+    """ A base stack implementation. """
+    def __init__(self):
+        self.stack = []
+
+    def push(self, item):
+        """ Supports chaining push calls. """
+        self.stack.append(item)
+        return self
+
+    def pop(self):
+        return self.stack.pop()
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        assert len(self) == 0
+
+    def __len__(self):
+        return len(self.stack)
+
+class FutStack(Stack):
+    """
+    For pushing futures.
+    get_result() is called on pop.
+    """
+    def pop(self):
+        future = super(FutStack, self).pop()
+        return future.get_result()
 
 class PageFuture(object):
     """

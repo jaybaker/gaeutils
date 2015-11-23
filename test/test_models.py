@@ -4,6 +4,7 @@ from google.appengine.ext import ndb
 from google.appengine.api import memcache
 
 from gaeutils import models
+from gaeutils import Stack, FutStack
 
 class NoCacheModel(tests.TestModel, models.NoCache):
     pass
@@ -40,3 +41,32 @@ class TestNDBCache(tests.TestBase):
         # the model with no cache should not be in memcache
         self.assertTrue(memcache.get(self.mkey(self.no_cache_me_key)) is None)
 
+
+class StackTest(tests.TestBase):
+    def test_simple_case(self):
+        s = Stack().push('a').push('b')
+        self.assertEqual('b', s.pop())
+        self.assertEqual('a', s.pop())
+
+    def test_with_context(self):
+        # no error
+        with Stack() as s:
+            s.push('a').push('b')
+            s.pop()
+            s.pop()
+
+        # forgot to pop something
+        try:
+            with Stack() as s:
+                s.push('a').push('b')
+                s.pop()
+            self.fail()
+        except AssertionError:
+            pass
+
+    def test_future_stack(self):
+        s = FutStack()
+        s.push(models.FauxFuture(data='a'))
+        s.push(models.FauxFuture(data='b'))
+        self.assertEqual('b', s.pop())
+        self.assertEqual('a', s.pop())
