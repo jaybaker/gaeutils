@@ -3,3 +3,6 @@
 !.gitignore
 
 *.pyc
+
+MANIFEST
+dist
