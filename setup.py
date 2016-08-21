@@ -1,7 +1,7 @@
 from distutils.core import setup
 setup(
-  name = 'jbaker-gaeutils',
-  packages = ['jbaker-gaeutils'],
+  name = 'aeutils',
+  packages = ['aeutils'],
   version = '0.1',
   description = 'A collection of utilities for Google App Engine',
   author = 'Jay Baker',
