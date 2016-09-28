@@ -1,7 +1,7 @@
 from distutils.core import setup
 setup(
   name = 'gaeutils',
-  packages = ['gaeutils'],
+  packages = ['gaeutils', 'gaeutils.fanout'],
   version = '0.1',
   description = 'Simple set of GAE utilities',
   author = 'Jay Baker',
